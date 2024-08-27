@@ -1,0 +1,7 @@
+{% extends 'parts/base.html' %}
+{% block content %}
+  <h2>{{ product.name }}</h2>
+  <p>الوصف: {{ product.description }}</p>
+  <p>السعر: {{ product.price }}</p>
+  <p>المخزون: {{ product.stock_level }}</p>
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيصال الدفع</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+        }
+        .receipt-container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .company-info, .customer-info {
+            margin-bottom: 20px;
+        }
+        .company-info img {
+            max-width: 100px;
+        }
+        .payment-details {
+            border-top: 2px solid #000;
+            padding-top: 10px;
+        }
+        .print-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <h2>إيصال الدفع</h2>
+        
+        <div class="company-info">
+            <h3>بيانات الشركة</h3>
+            <p>الاسم: {{ company.name }}</p>
+            <p>العنوان: {{ company.address }}</p>
+            <p>رقم الهاتف: {{ company.phone_number }}</p>
+            {% if company.company_logo %}
+                <img src="{{ company.company_logo.url }}" alt="شعار الشركة">
+            {% endif %}
+        </div>
+        
+        <div class="customer-info">
+            <h3>بيانات العميل</h3>
+            <p>الاسم: {{ payment.customer.name }}</p>
+            <p>العنوان: {{ payment.customer.address }}</p>
+            <p>رقم الهاتف: {{ payment.customer.phone_number }}</p>
+        </div>
+        
+        <div class="payment-details">
+            <h3>تفاصيل الدفع</h3>
+            <p>المبلغ المدفوع: {{ payment.amount }} ريال</p>
+            <p>طريقة الدفع: {{ payment.get_payment_method_display }}</p>
+            <p>تاريخ الدفع: {{ payment.payment_date }}</p>
+            <p>رقم المعاملة: {{ payment.transaction_id|default:"غير متوفر" }}</p>
+            <p>حالة الدفع: {{ payment.status }}</p>
+        </div>
+
+        <div class="print-btn">
+            <button onclick="window.print()">طباعة الإيصال</button>
+        </div>
+    </div>
+</body>
+</html>

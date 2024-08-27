@@ -1,0 +1,10 @@
+{% extends 'parts/base.html' %}
+
+{% block content %}
+  <h2>استرداد الأموال للعميل {{ payment.customer.name }}</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">استرداد المبلغ</button>
+  </form>
+{% endblock %}

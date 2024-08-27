@@ -1,0 +1,115 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}Daily Treasury Report{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Daily Treasury Report</h1>
+    <p class="text-center lead">Total Sales Payments Today: <strong>{{ total_sales_payments }} ر.س</strong></p>
+
+    <!-- Sales Payments Table -->
+    <h2 class="mt-5">Sales Payments</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales_page_obj %}
+                <tr>
+                    <td>{{ sale.customer.name }}</td>
+                    <td>{{ sale.payment_amount }}</td>
+                    <td>{{ sale.get_payment_method_display }}</td>
+                    <td>{{ sale.payment_date|date:"Y-m-d H:i" }}</td>
+                    
+                    <td><a href="{% url 'update_sale_payment_status' sale.id %}" class="btn btn-info btn-sm">{{ sale.status }}</a></td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No sales payments found for today.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination for Sales Payments -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if sales_page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?sales_page={{ sales_page_obj.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+            {% for num in sales_page_obj.paginator.page_range %}
+            <li class="page-item {% if sales_page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?sales_page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if sales_page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?sales_page={{ sales_page_obj.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Purchase Payments Table -->
+    <h2 class="mt-5">Purchase Payments</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Vendor</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for purchase in purchases_page_obj %}
+                <tr>
+                    <td>{{ purchase.vendor.name }}</td>
+                    <td>{{ purchase.payment_amount }}</td>
+                    <td>{{ purchase.get_payment_method_display }}</td>
+                    <td>{{ purchase.payment_date|date:"Y-m-d H:i" }}</td>
+                    <td><a href="{% url 'update_purchase_payment_status' purchase.id %}" class="btn btn-info btn-sm">{{ purchase.status }}</a></td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No purchase payments found for today.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination for Purchase Payments -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if purchases_page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?purchases_page={{ purchases_page_obj.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+            {% for num in purchases_page_obj.paginator.page_range %}
+            <li class="page-item {% if purchases_page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?purchases_page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if purchases_page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?purchases_page={{ purchases_page_obj.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

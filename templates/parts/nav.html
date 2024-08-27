@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Asl Eloroba System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'home' %}">Asl Eloroba System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <!-- Vendor Registration -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'create_vendor' %}">
+                    <i class="fas fa-truck-loading"></i> تسجيل الموردين
+                </a>
+            </li>
+
+            <!-- Customer Registration -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'customer_create' %}">
+                    <i class="fas fa-user-plus"></i> تسجيل العملاء
+                </a>
+            </li>
+
+            <!-- Vendor List -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'vendor_list' %}">
+                    <i class="fas fa-truck"></i> قائمة الموردين
+                </a>
+            </li>
+
+            <!-- Customer List -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'customer_list' %}">
+                    <i class="fas fa-users"></i> قائمة العملاء
+                </a>
+            </li>
+
+            <!-- Sales -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales_invoice_list' %}">
+                    <i class="fas fa-shopping-cart"></i> المبيعات
+                </a>
+            </li>
+
+            <!-- Payments -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'purchase_payment_list' %}">
+                    <i class="fas fa-money-check-alt"></i> المدفوعات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sale_payment_list' %}">
+                    <i class="fas fa-money-check-alt"></i> المبيعات
+                </a>
+            </li>
+
+            <!-- Reports -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales_report' %}">
+                    <i class="fas fa-chart-bar"></i> التقارير
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'inventory_report' %}">
+                    <i class="fas fa-chart-bar"></i> التقارير
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-chart-bar"></i> التقارير
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'materials_report' %}">
+                    <i class="fas fa-chart-bar"></i> التقارير
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manufacturing_report' %}">
+                    <i class="fas fa-chart-bar"></i> التقارير
+                </a>
+            </li>
+           
+
+            <!-- Logout -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- Footer -->
+<footer class="bg-light text-center mt-5 p-3">
+    <p>&copy; 2024 Asl Eloroba System. جميع الحقوق محفوظة.</p>
+</footer>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

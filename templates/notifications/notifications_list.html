@@ -1,0 +1,13 @@
+{% extends 'parts/base.html' %}
+
+{% block content %}
+  <h2>الإشعارات</h2>
+  <ul>
+    {% for notification in notifications %}
+      <li>
+        {{ notification.message }} - <small>{{ notification.timestamp }}</small>
+        <a href="{% url 'mark_as_read' notification.id %}">تحديد كمقروء</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

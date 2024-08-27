@@ -1,0 +1,144 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}
+قائمة فواتير شراء الخامات
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'create_material_invoice' %}" class="btn btn-primary mb-3">إنشاء فاتورة شراء خامات جديدة</a>
+        </div>
+    </div>
+    <div id="printable-area">
+        <h2 class="text-center">قائمة فواتير شراء الخامات</h2>
+        <table class="table table-bordered table-striped" id="invoice-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>رقم الفاتورة</th>
+                    <th>المورد</th>
+                    <th>الخامات</th>
+                    <th>تاريخ الفاتورة</th>
+                    <th>الكمية</th>
+                    <th>سعر الشراء</th>
+                    <th>ضريبة القيمة المضافة</th>
+                    <th>المبلغ الإجمالي</th>
+                    <th>تفاصيل الفاتورة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in page_obj %}
+                <tr>
+                    <td>{{ invoice.id }}</td>
+                    <td>{{ invoice.vendor }}</td>
+                    <td>{{ invoice.material_name }}</td>
+                    <td>{{ invoice.invoice_date }}</td>
+                    <td class="total-quantity">{{ invoice.quantity|floatformat:0 }}</td>
+                    <td>{{ invoice.unit_price }}</td>               
+                    <td>{{ invoice.vat_material_purchase|floatformat:0 }} %</td>
+                    <td class="total-amount">{{ invoice.total_amount }}</td>
+                    <td>
+
+                        <a href="{% url 'material_invoice_detail' pk=invoice.id %}" class="btn btn-info btn-sm">عرض التفاصيل</a>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-right">الإجمالي الكلي للكمية:</th>
+                    <th id="total-quantity"></th>
+                    <th colspan="2" class="text-right">الإجمالي الكلي للمبلغ:</th>
+                    <th id="grand-total"></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- عرض أزرار التنقل بين الصفحات -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="printDiv()">طباعة القائمة</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let totalAmounts = document.querySelectorAll('.total-amount');
+            let totalQuantities = document.querySelectorAll('.total-quantity');
+            let grandTotal = 0;
+            let totalQuantity = 0;
+
+            totalAmounts.forEach(function(total) {
+                let amount = parseFloat(total.textContent);
+                grandTotal += isNaN(amount) ? 0 : amount;
+            });
+
+            totalQuantities.forEach(function(quantity) {
+                let qty = parseFloat(quantity.textContent);
+                totalQuantity += isNaN(qty) ? 0 : qty;
+            });
+
+            document.getElementById('grand-total').textContent = grandTotal.toFixed(2) + ' ريال';
+            document.getElementById('total-quantity').textContent = totalQuantity.toFixed(0);
+        });
+
+        function printDiv() {
+            var printContents = document.getElementById('printable-area').innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #printable-area, #printable-area * {
+                visibility: visible;
+            }
+
+            #printable-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</div>
+{% endblock %}
+
+ 

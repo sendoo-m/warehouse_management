@@ -1,0 +1,28 @@
+{% extends 'parts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}إنشاء فاتورة شراء خامات جديدة{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-secondary">
+                    <h3>إنشاء فاتورة شراء خامات جديدة</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}  <!-- عرض النموذج باستخدام crispy -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success">إصدار الفاتورة</button>
+                            <a href="{% url 'material_invoice_list' %}" class="btn btn-secondary">إلغاء</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

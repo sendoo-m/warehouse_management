@@ -1,0 +1,166 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}Sales Invoice Details{% endblock %}
+
+{% block content %}
+<!-- <html dir="rtl"> -->
+<div class="container mt-5" id="printable-area">
+    <h2 class="text-center"> فاتورة بيع رقم #{{ invoice.id }}</h2>
+
+    <!-- Company and Customer Details -->
+    <div class="row">
+        <div class="col-12">
+            <div class="p-3 mb-3">
+                <!-- Title row -->
+                <div class="row">
+                    <div class="col-6">
+                        <h4>{{ company.name }}</h4>
+                        <p>{{ company.address }}</p>
+                        <p>الرقم الضريبي: {{ company.tax_number }}</p>
+                        <p>السجل التجاري: {{ company.commercial_register }}</p>
+                        <p>رقم الهاتف: {{ company.phone_number }}</p>
+                    </div>
+                    <div class="col-6 text-right">
+                        {% if company.company_logo %}
+                        <img src="{{ company.company_logo.url }}" alt="شعار الشركة" class="img-fluid" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- customer and Invoice info row -->
+                <div class="row invoice-info mt-4">
+                    <div class="col-sm-6 invoice-col">
+                        <strong>العميل:</strong>
+                        <address>
+                            {{ invoice.customer.name }}<br>
+                            {{ invoice.customer.address }}<br>
+                            رقم الهاتف: {{ invoice.customer.phone_number }}<br>
+                        </address>
+                    </div>
+
+                    <div class="col-sm-6 invoice-col text-right">
+                        <b>رقم الفاتورة:</b> {{ invoice.id }}<br>
+                        <b>التاريخ:</b> {{ invoice.invoice_date }}<br>
+                    </div>
+                </div>
+               
+                {% comment %}
+                <!-- Table row -->
+                <h4 class="text-center text-uppercase mb-4">العناصر</h4>
+                <div class="container mt-5" id="printable-area">
+                    <h1 class="text-center">Sales Invoice #{{ invoice.id }}</h1>
+                    
+    <!-- Company and Customer Details -->
+    <div class="row mb-4">
+        <!-- Company Details (Left) -->
+        <div class="col-md-6 text-left">
+            <h4>{{ company.name }}</h4>
+            <p>العنوان: {{ company.address }}</p>
+            <p>رقم الجوال: {{ company.phone_number }}</p>
+            <p>السجل الضريبي: {{ company.tax_number }}</p>
+            <p>السجل التجاري: {{ company.commercial_register }}</p>
+        </div>
+        
+        <!-- Customer Details (Right) -->
+        <div class="col-md-6 text-right">
+            <h4>Customer: {{ invoice.customer.name }}</h4>
+            <p>Date: {{ invoice.invoice_date }}</p>
+        </div>
+    </div>
+    {% endcomment %}
+
+    <!-- Invoice Items -->
+    <h4>Invoice Items</h4>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total (without VAT)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ invoice.finished_product.name }}</td>
+                <td id="quantity">{{ invoice.quantity|floatformat:2 }}</td>
+                <td id="price">{{ invoice.sales_price|floatformat:2 }}</td>
+                <td id="total-without-vat"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    {% comment %}
+    <!-- VAT and Total Amount -->
+    <div class="row">
+        <div class="col-md-6"></div> <!-- Empty space for alignment -->
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>الإجمالي الفرعي:</th>
+                        <td id="subtotal"></td>
+                    </tr>
+                    <tr>
+                        <th>الضريبة ({{ invoice.vat_sale }}%):</th> <!-- عرض النسبة فقط هنا -->
+                        <td id="vat-amount"></td>
+                    </tr>
+                    <tr>
+                        <th>الإجمالي الكلي:</th>
+                        <td id="total-with-vat"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endcomment %}
+    
+    <!-- حساب الإجماليات -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <p><strong>الإجمالي الفرعي:</strong> <span id="subtotal">0.00</span> ر.س</p>
+            <p><strong>الضريبة ({{ invoice.vat_sale|floatformat:0 }}%):</strong> <span id="vat-amount">0.00</span> ر.س</p>
+        </div>
+        <div class="col-md-6 text-right">
+            <h4><strong>الإجمالي الكلي:</strong> <span id="total-with-vat">0.00</span> ر.س</h4>
+        </div>
+    </div>
+    <h3 class="text-center mt-4">شكراً لتعاملكم معنا</h3>
+
+    <!-- Print Button -->
+    <div class="text-center mt-4">
+        <button class="btn btn-primary" onclick="printInvoice()">طباعة الفاتورة</button>
+    </div>
+
+</div>
+<a href="{% url 'sales_invoice_list' %}" class="btn btn-secondary mt-3">الرجوع للقائمة</a>
+
+<!-- Print and Calculation Scripts -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const quantity = parseFloat(document.getElementById('quantity').textContent);
+        const price = parseFloat(document.getElementById('price').textContent);
+        const vatPercentage = parseFloat('{{ invoice.vat_sale }}'); // هنا نستخدم القيمة الفعلية بدون %
+
+        const totalWithoutVat = quantity * price;
+        const vatAmount = totalWithoutVat * (vatPercentage / 100);
+        const totalWithVat = totalWithoutVat + vatAmount;
+
+        // Update the totals in the table
+        document.getElementById('total-without-vat').textContent = totalWithoutVat.toFixed(2);
+        document.getElementById('subtotal').textContent = totalWithoutVat.toFixed(2);
+        document.getElementById('vat-amount').textContent = vatAmount.toFixed(2);
+        document.getElementById('total-with-vat').textContent = totalWithVat.toFixed(2);
+    });
+
+    function printInvoice() {
+        const printContents = document.getElementById('printable-area').innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+</html>
+{% endblock %}

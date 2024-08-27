@@ -1,0 +1,109 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}تفاصيل دفعة الشراء{% endblock %}
+
+{% block content %}
+<div class="invoice-container mt-5" id="printableArea">
+    <div class="row">
+        <h2 class="text-center">تفاصيل الدفع رقم #{{ purchase_payment.id }}</h2>
+        <div class="col-12">
+            <div class="p-3 mb-3">
+                <div class="row">
+                    <div class="col-6">
+                        <h4>{{ company.name }}</h4>
+                        <p>{{ company.address }}</p>
+                        <p>الرقم الضريبي: {{ company.tax_number }}</p>
+                        <p>السجل التجاري: {{ company.commercial_register }}</p>
+                        <p>رقم الهاتف: {{ company.phone_number }}</p>
+                    </div>
+                    <div class="col-6 text-right">
+                        {% if company.company_logo %}
+                        <img src="{{ company.company_logo.url }}" alt="شعار الشركة" class="img-fluid" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Payment info -->
+                <div class="row mt-4">
+                    <div class="col-sm-6">
+                        <strong>المورد:</strong>
+                        <p>{{ purchase_payment.vendor.name }}</p>
+                        <p>رقم الهاتف: {{ purchase_payment.vendor.phone_number }}</p>
+                    </div>
+
+                    <div class="col-sm-6 text-right">
+                        <p><b>رقم العملية:</b> {{ purchase_payment.id }}</p>
+                        <p><b>تاريخ الدفع:</b> {{ purchase_payment.payment_date }}</p>
+                        <p><b>طريقة الدفع:</b> {{ purchase_payment.get_payment_method_display }}</p>
+                    </div>
+                </div>
+
+                <!-- Payment details -->
+                <h4 class="text-center text-uppercase mb-4">تفاصيل الدفع</h4>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>المبلغ المدفوع</th>
+                        <td>{{ purchase_payment.payment_amount }} ريال</td>
+                    </tr>
+                    <tr>
+                        <th>طريقة الدفع</th>
+                        <td>{{ purchase_payment.get_payment_method_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>حالة الدفع</th>
+                        <td>{{ purchase_payment.get_status_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>رقم المعاملة</th>
+                        <td>{{ purchase_payment.transaction_id }}</td>
+                    </tr>
+                </table>
+
+                <h3 class="text-center mt-4">شكراً لتعاملكم معنا</h3>
+
+                <!-- Print Button -->
+                <div class="text-center mt-4">
+                    <button id="print-btn" class="btn btn-primary">طباعة الإيصال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'purchase_payment_list' %}" class="btn btn-secondary mt-3">الرجوع للقائمة</a>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('print-btn').addEventListener('click', function () {
+        const printContents = document.getElementById('printableArea').innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .invoice-container {
+        margin-top: 30px;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #print-btn, .navbar, .footer {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

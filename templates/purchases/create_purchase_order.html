@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>إنشاء أمر شراء جديد</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ order_form.as_p }}
+    <h3>أضف منتجات</h3>
+    <!-- نموذج لإضافة المنتجات إلى الطلب -->
+    <div id="products">
+      <!-- كرر لإضافة المنتجات -->
+    </div>
+    <button type="submit" class="btn btn-primary">إرسال</button>
+  </form>
+{% endblock %}

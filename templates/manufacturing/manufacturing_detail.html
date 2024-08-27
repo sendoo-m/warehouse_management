@@ -1,0 +1,109 @@
+{% extends 'parts/base.html' %}
+{% block title %}تفاصيل عملية التصنيع{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-secondary">
+                    <h3>تفاصيل عملية التصنيع</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>المنتج بعد التصنيع</th>
+                                <td>{{ manufacturing_process.final_product_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>المنتج الخام</th>
+                                <td>{{ manufacturing_process.product.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>الكمية المنتجة</th>
+                                <td><span id="quantity-produced">{{ manufacturing_process.quantity_produced }}</span></td>
+                            </tr>
+                            <tr>
+                                <th>سعر الخام</th>
+                                <td><span id="raw-price">{{ manufacturing_process.product.price }}</span></td>
+                            </tr>
+                            <tr>
+                                <th>تاريخ التصنيع</th>
+                                <td>{{ manufacturing_process.production_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>المستودع</th>
+                                <td>{{ manufacturing_process.warehouse.name }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">المواد الخام المستخدمة</h4>
+                    <ul class="list-group">
+                        {% for material_usage in manufacturing_process.materialusage_set.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ material_usage.material.name }} - الكمية المستخدمة: 
+                            <span class="material-quantity">{{ material_usage.quantity_used }}</span> 
+                            <span class="badge bg-primary">سعر الوحدة: <span class="price-per-unit">{{ material_usage.material.price_per_unit }}</span> ريال</span>
+                        </li>
+                        {% endfor %}
+
+                        <!-- إجمالي تكلفة المواد الخام -->
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>إجمالي تكلفة المواد الخام:</strong>
+                            <span id="total-quantity-raw" class="badge bg-secondary">0 ريال</span>
+                        </li>
+
+                        <!-- إجمالي تكلفة الأدوات -->
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>إجمالي تكلفة الأدوات:</strong>
+                            <span id="total-material-tools" class="badge bg-secondary">0 ريال</span>
+                        </li>
+
+                        <!-- إجمالي تكلفة المواد الخام والأدوات معًا -->
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>الإجمالي الكلي:</strong>
+                            <span id="total-overall" class="badge bg-success">0 ريال</span>
+                        </li>
+                    </ul>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'manufacturing_list' %}" class="btn btn-secondary">العودة إلى القائمة</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const quantityProduced = parseFloat(document.getElementById("quantity-produced").textContent);
+    const rawPrice = parseFloat(document.getElementById("raw-price").textContent);
+
+    // حساب الكمية * سعر الخام
+    const totalQuantityRaw = quantityProduced * rawPrice;
+    document.getElementById("total-quantity-raw").textContent = totalQuantityRaw.toFixed(2) + " ريال";
+
+    // حساب إجمالي تكلفة الأدوات
+    let totalMaterialTools = 0;
+    const materialQuantities = document.querySelectorAll(".material-quantity");
+    const pricePerUnits = document.querySelectorAll(".price-per-unit");
+
+    materialQuantities.forEach(function(material, index) {
+        const quantityUsed = parseFloat(material.textContent);
+        const pricePerUnit = parseFloat(pricePerUnits[index].textContent);
+        totalMaterialTools += quantityUsed * pricePerUnit;
+    });
+
+    document.getElementById("total-material-tools").textContent = totalMaterialTools.toFixed(2) + " ريال";
+
+    // حساب الإجمالي الكلي (إجمالي تكلفة المواد الخام + إجمالي تكلفة الأدوات)
+    const totalOverall = totalQuantityRaw + totalMaterialTools;
+    document.getElementById("total-overall").textContent = totalOverall.toFixed(2) + " ريال";
+});
+</script>
+{% endblock %}

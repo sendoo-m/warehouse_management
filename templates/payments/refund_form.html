@@ -1,0 +1,17 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}إضافة استرداد{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">إضافة استرداد</h2>
+    <form method="POST" class="form-horizontal">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-group text-center mt-4">
+            <button type="submit" class="btn btn-success">حفظ الاسترداد</button>
+            <a href="{% url 'refund_list' %}" class="btn btn-secondary">الرجوع للقائمة</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

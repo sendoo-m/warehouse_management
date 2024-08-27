@@ -1,0 +1,89 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}Report Summary{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Title Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 font-weight-bold">Report Summary</h1>
+        <p class="lead text-muted">Overview of sales, purchases, payments, refunds, and inventory</p>
+    </div>
+
+    <!-- Date Filter Form -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <form method="GET" class="form-inline justify-content-center">
+                <div class="form-group mx-2">
+                    <label for="start_date" class="sr-only">Start Date</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date }}" class="form-control form-control-lg" placeholder="Start Date">
+                </div>
+                <div class="form-group mx-2">
+                    <label for="end_date" class="sr-only">End Date</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date }}" class="form-control form-control-lg" placeholder="End Date">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg mx-2">Generate Reports</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Summary Cards -->
+    <div class="row">
+        <!-- Sales Report Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Sales Report</h4>
+                    <p class="card-text display-4 text-primary">{{ sales_report.total_sales|floatformat:2 }}</p>
+                    <p class="text-muted">Total Sales</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Report Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-success">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Purchase Report</h4>
+                    <p class="card-text display-4 text-success">{{ purchase_report.total_purchases|floatformat:2 }}</p>
+                    <p class="text-muted">Total Purchases</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Report Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-info">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Payment Report</h4>
+                    <p class="card-text display-4 text-info">{{ payment_report.net_payments|floatformat:2 }}</p>
+                    <p class="text-muted">Net Payments</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Refund Report Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Refund Report</h4>
+                    <p class="card-text display-4 text-warning">{{ refund_report.total_refunds|floatformat:0 }}</p>
+                    <p class="text-muted">Total Refunds</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Report Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-secondary">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Inventory Report</h4>
+                    <p class="card-text display-4 text-secondary">{{ inventory_report.total_inventory|floatformat:0 }}</p>
+                    <p class="text-muted">Total Inventory</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

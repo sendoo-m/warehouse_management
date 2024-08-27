@@ -1,0 +1,75 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Dashboard</h1>
+    <div class="row">
+        <!-- العملاء -->
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">إجمالي العملاء</h5>
+                    <p class="card-text display-4">{{ total_customers }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- المبيعات -->
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">إجمالي المبيعات</h5>
+                    <p class="card-text display-4">{{ total_sales|floatformat:2 }} ريال</p>
+                </div>
+            </div>
+        </div>
+        <!-- المشتريات -->
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">إجمالي المشتريات</h5>
+                    <p class="card-text display-4">{{ total_purchases|floatformat:2 }} ريال</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- المخزون -->
+        <div class="col-md-6">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">إجمالي الكمية في المخزون</h5>
+                    <p class="card-text display-4">{{ total_inventory }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- المنتجات المصنعة -->
+        <div class="col-md-6">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">إجمالي المنتجات المصنعة النهائية</h5>
+                    <p class="card-text display-4">{{ total_finished_products }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- بعض التنسيقات -->
+<style>
+    .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    .card-title {
+        font-size: 1.5rem;
+    }
+    .card-text {
+        font-size: 2.5rem;
+    }
+</style>
+{% endblock %}

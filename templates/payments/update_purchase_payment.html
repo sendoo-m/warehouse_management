@@ -1,0 +1,20 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}Update Purchase Payment Status{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">تحديث حالة الدفع للمشتريات</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="status">الحالة الحالية: {{ purchase_payment.status }}</label>
+            <select id="status" name="status" class="form-control">
+                <option value="completed" {% if purchase_payment.status == 'completed' %}selected{% endif %}>Completed</option>
+                <option value="refunded" {% if purchase_payment.status == 'refunded' %}selected{% endif %}>Refunded</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">تحديث</button>
+    </form>
+</div>
+{% endblock %}

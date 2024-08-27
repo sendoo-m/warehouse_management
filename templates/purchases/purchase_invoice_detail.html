@@ -1,0 +1,155 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}Purchase Invoice Details{% endblock %}
+
+{% block content %}
+<div class="invoice-container mt-5" id="printableArea">
+    <div class="row">
+    <h2 class="text-center"> فاتورة شراء رقم #{{ invoice.id }}</h2>
+
+        <div class="col-12">
+            <div class="p-3 mb-3">
+                <!-- Title row -->
+                <div class="row">
+                    <div class="col-6">
+                        <h4>{{ company.name }}</h4>
+                        <p>{{ company.address }}</p>
+                        <p>الرقم الضريبي: {{ company.tax_number }}</p>
+                        <p>السجل التجاري: {{ company.commercial_register }}</p>
+                        <p>رقم الهاتف: {{ company.phone_number }}</p>
+                    </div>
+                    <div class="col-6 text-right">
+                        {% if company.company_logo %}
+                        <img src="{{ company.company_logo.url }}" alt="شعار الشركة" class="img-fluid" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Vendor and Invoice info row -->
+                <div class="row invoice-info mt-4">
+                    <div class="col-sm-6 invoice-col">
+                        <strong>المورد:</strong>
+                        <address>
+                            {{ invoice.vendor.name }}<br>
+                            {{ invoice.vendor.address }}<br>
+                            رقم الهاتف: {{ invoice.vendor.phone_number }}<br>
+                        </address>
+                    </div>
+
+                    <div class="col-sm-6 invoice-col text-right">
+                        <b>رقم الفاتورة:</b> {{ invoice.id }}<br>
+                        <b>التاريخ:</b> {{ invoice.invoice_date }}<br>
+                    </div>
+                </div>
+
+                <!-- Table row -->
+                <h4 class="text-center text-uppercase mb-4">العناصر</h4>
+                <table id="invoice-table" class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>الوصف</th>
+                            <th>الكمية</th>
+                            <th>السعر للوحدة</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ invoice.material }}</td>
+                            <td id="quantity">{{ invoice.quantity|floatformat:0 }}</td>
+                            <td id="unit-price">{{ invoice.purchase_price }} ر.س</td>
+                            <td id="total-price">0.00 ر.س</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- حساب الإجماليات -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <p><strong>الإجمالي الفرعي:</strong> <span id="subtotal">0.00</span> ر.س</p>
+                        <p><strong>الضريبة ({{ invoice.vat_percentage|floatformat:0 }}%):</strong> <span id="vat">0.00</span> ر.س</p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <h4><strong>الإجمالي الكلي:</strong> <span id="grand-total">0.00</span> ر.س</h4>
+                    </div>
+                </div>
+                <h3 class="text-center mt-4">شكراً لتعاملكم معنا</h3>
+
+                <!-- زر الطباعة -->
+                <div class="text-center mt-4">
+                    <button id="print-btn" class="btn btn-primary">طباعة الفاتورة</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<a href="{% url 'purchase_invoice_list' %}" class="btn btn-secondary mt-3">الرجوع للقائمة</a>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quantity = parseFloat(document.getElementById('quantity').textContent);
+        const unitPrice = parseFloat(document.getElementById('unit-price').textContent);
+        const vatPercentage = parseFloat('{{ invoice.vat_percentage }}');
+
+        const subtotal = quantity * unitPrice;
+        const vat = subtotal * (vatPercentage / 100);
+        const grandTotal = subtotal + vat;
+
+        document.getElementById('total-price').textContent = subtotal.toFixed(2) + ' ر.س';
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('vat').textContent = vat.toFixed(2);
+        document.getElementById('grand-total').textContent = grandTotal.toFixed(2);
+
+        document.getElementById('print-btn').addEventListener('click', function () {
+            printInvoice();
+        });
+    });
+
+    function printInvoice() {
+        const printContents = document.getElementById('printableArea').innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    }
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .invoice-container {
+        margin-top: 30px;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .table thead th {
+        background-color: #343a40;
+        color: white;
+    }
+
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: white;
+        }
+
+        .invoice-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #print-btn, .navbar, .footer {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

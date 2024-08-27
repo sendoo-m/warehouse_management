@@ -1,0 +1,101 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}قائمة الاستردادات{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'refund_create' %}" class="btn btn-primary mb-3">إضافة استرداد جديد</a>
+        </div>
+    </div>
+    <div id="printable-area">
+        <h2 class="text-center">قائمة الاستردادات</h2>
+        <table class="table table-bordered table-striped" id="invoice-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>رقم الاسترداد</th>
+                    <th>المبلغ</th>
+                    <th>التاريخ</th>
+                    <th>السبب</th>
+                    <th>التفاصيل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for refund in refunds %}
+                <tr>
+                    <td>{{ refund.id }}</td>
+                    <td>{{ refund.refund_amount }} ريال</td>
+                    <td>{{ refund.refund_date }}</td>
+                    <td>{{ refund.get_reason_display }}</td>
+                    <td>
+                        <a href="{% url 'refund_detail' refund.id %}" class="btn btn-info btn-sm">عرض التفاصيل</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination and Print Button -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-primary" onclick="printDiv()">طباعة القائمة</button>
+    </div>
+</div>
+
+<script>
+    function printDiv() {
+        var printContents = document.getElementById('printable-area').innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #printable-area, #printable-area * {
+            visibility: visible;
+        }
+
+        #printable-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

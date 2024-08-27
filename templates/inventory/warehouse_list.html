@@ -1,0 +1,21 @@
+{% extends 'parts/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">قائمة المستودعات</h2>
+    
+    <div class="row">
+        {% for warehouse in warehouses %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ warehouse.name }}</h4>
+                    <p class="card-text text-muted">{{ warehouse.description }}</p> <!-- Optional description -->
+                    <a href="{% url 'inventory_movements' warehouse.id %}" class="btn btn-primary">عرض الحركات</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

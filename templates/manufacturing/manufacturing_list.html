@@ -1,0 +1,177 @@
+{% extends 'parts/base.html' %}
+{% block title %}قائمة عمليات التصنيع | Manufacturing Process List{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div id="printable-area">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-center">قائمة عمليات التصنيع</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'create_manufacturing_process' %}" class="btn btn-primary mb-3">إنشاء عملية تصنيع جديدة</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-hover table-bordered" id="manufacturing-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>المنتج</th>
+                        <th>ما تم تصنيعه</th>
+                        <th>الكمية المنتجة</th>
+                        <th>سعر الخام</th>
+                        <th>تاريخ التصنيع</th>
+                        <th>المستودع</th>
+                        <th>الخامات المستخدمة</th>
+                        <th>سعر الأدوات</th>
+                        <th>الكمية * سعر الخام</th>
+                        <th>الخامات المستخدمة * سعر الأدوات</th>
+                        <th>تفاصيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in manufacturing_processes %}
+                    <tr>
+                        <td>{{ process.product.name }}</td>
+                        <td>{{ process.final_product_name }}</td>
+                        <td class="quantity-produced">{{ process.quantity_produced }}</td>
+                        <td class="raw-price">{{ process.product.price }}</td>
+                        <td>{{ process.production_date }}</td>
+                        <td>{{ process.warehouse.name }}</td>
+                        <td>
+                            <ul>
+                                {% for material_usage in process.materialusage_set.all %}
+                                <li>{{ material_usage.material.name }} - الكمية: <span class="material-quantity">{{ material_usage.quantity_used }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                {% for material_usage in process.materialusage_set.all %}
+                                <li><span class="price-per-unit">{{ material_usage.material.price_per_unit }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td class="quantity-raw-total"></td>
+                        <td class="material-tools-total"></td>
+                        <td class="text-center">
+                            <a href="{% url 'manufacturing_detail' process.id %}" class="btn btn-sm btn-info">عرض التفاصيل</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="8" class="text-end">الإجمالي:</th>
+                        <th id="total-quantity-raw"></th>
+                        <th id="total-material-tools"></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    
+    <!-- عرض أزرار التنقل بين الصفحات -->
+    <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="printDiv()">طباعة القائمة</button>
+        </div>
+    </div>
+
+
+ 
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const rows = document.querySelectorAll("#manufacturing-table tbody tr");
+    let totalQuantityRaw = 0;
+    let totalMaterialTools = 0;
+
+    rows.forEach(function(row) {
+        const quantityProduced = parseFloat(row.querySelector(".quantity-produced").textContent);
+        const rawPrice = parseFloat(row.querySelector(".raw-price").textContent);
+
+        const quantityRawTotal = quantityProduced * rawPrice;
+        row.querySelector(".quantity-raw-total").textContent = quantityRawTotal.toFixed(2) + " ريال";
+        totalQuantityRaw += quantityRawTotal;
+
+        let materialToolsTotal = 0;
+        const materialQuantities = row.querySelectorAll(".material-quantity");
+        const pricePerUnits = row.querySelectorAll(".price-per-unit");
+
+        materialQuantities.forEach(function(material, index) {
+            const quantityUsed = parseFloat(material.textContent);
+            const pricePerUnit = parseFloat(pricePerUnits[index].textContent);
+            materialToolsTotal += quantityUsed * pricePerUnit;
+        });
+
+        row.querySelector(".material-tools-total").textContent = materialToolsTotal.toFixed(2) + " ريال";
+        totalMaterialTools += materialToolsTotal;
+    });
+
+    document.getElementById("total-quantity-raw").textContent = totalQuantityRaw.toFixed(2) + " ريال";
+    document.getElementById("total-material-tools").textContent = totalMaterialTools.toFixed(2) + " ريال";
+});
+
+function printDiv() {
+    var printContents = document.getElementById('printable-area').innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+}
+</script>
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #printable-area, #printable-area * {
+            visibility: visible;
+        }
+
+        #printable-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+    }
+</style>
+</div>
+{% endblock %}

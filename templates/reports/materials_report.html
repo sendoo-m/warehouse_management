@@ -1,0 +1,96 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}Materials Report{% endblock %}
+
+{% block content %}
+<div class="container mt-5" id="printable-area">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center mb-4">Materials Report</h1>
+
+            <!-- عرض إجمالي المواد الخام -->
+            <div class="alert alert-info text-center">
+                <strong>Total Raw Materials in Stock:</strong> {{ total_raw_materials }} units
+            </div>
+
+            <!-- جدول المواد الخام -->
+            <div class="table-responsive mb-5">
+                <h2 class="text-center">Raw Materials</h2>
+                <table id="raw-materials-table" class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Raw Material</th>
+                            <th>Stock Level</th>
+                            <th>Weight</th>
+                            <th>Price</th>
+                            <th>Wastage Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for raw_material in raw_materials %}
+                        <tr>
+                            <td>{{ raw_material.name }}</td>
+                            <td>{{ raw_material.stock_level }}</td>
+                            <td>{{ raw_material.weight }}</td>
+                            <td>{{ raw_material.price }}</td>
+                            <td>{{ raw_material.wastage_percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- عرض إجمالي المواد المستخدمة -->
+            <div class="alert alert-info text-center">
+                <strong>Total Materials Used:</strong> {{ total_materials_used }} units
+            </div>
+
+            <!-- جدول المواد -->
+            <div class="table-responsive">
+                <h2 class="text-center">Materials</h2>
+                <table id="materials-table" class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Material</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for material in materials %}
+                        <tr>
+                            <td>{{ material.name }}</td>
+                            <td>{{ material.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- زر الطباعة -->
+            <div class="text-center mt-4">
+                <button class="btn btn-primary" onclick="printReport()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function printReport() {
+        // تحديد العنصر القابل للطباعة
+        var printContents = document.querySelector('#printable-area').innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        // استبدال محتويات الصفحة بالمحتويات القابلة للطباعة
+        document.body.innerHTML = printContents;
+        window.print();
+
+        // إعادة المحتويات الأصلية بعد الطباعة
+        document.body.innerHTML = originalContents;
+        window.location.reload();  // إعادة تحميل الصفحة بعد الطباعة
+    }
+</script>
+{% endblock %}

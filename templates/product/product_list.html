@@ -1,0 +1,9 @@
+{% extends 'parts/base.html' %}
+{% block content %}
+  <h2>قائمة المنتجات</h2>
+  <ul>
+    {% for product in products %}
+      <li><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

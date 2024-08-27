@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ company.name }}</h2>
+  <p>العنوان: {{ company.address }}</p>
+  <p>الرقم الضريبي: {{ company.tax_number|default:"غير متوفر" }}</p>
+  <p>السجل التجاري: {{ company.commercial_register|default:"غير متوفر" }}</p>
+  <p>رقم الهاتف: {{ company.phone_number }}</p>
+  <p>كود الشركة: {{ company.company_code }}</p>
+  
+  {% if company.company_logo %}
+    <p>شعار الشركة:</p>
+    <img src="{{ company.company_logo.url }}" alt="شعار الشركة" width="200">
+  {% else %}
+    <p>لا يوجد شعار متاح.</p>
+  {% endif %}
+{% endblock %}

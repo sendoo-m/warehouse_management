@@ -1,0 +1,38 @@
+{% extends 'parts/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">حركات المخزون في {{ warehouse.name }}</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>المنتج</th>
+                    <th>الكمية</th>
+                    <th>نوع الحركة</th>
+                    <th>التاريخ</th>
+                    <th>الوصف</th>
+                    <th>تاريخ الصلاحية</th>
+                    <th>السعر</th>
+                    <th>التوالف</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movement in movements %}
+                <tr class="{% if movement.get_movement_type_display == 'إدخال' %}table-success{% elif movement.get_movement_type_display == 'إخراج' %}table-danger{% else %}table-warning{% endif %}">
+                    <td>{{ movement.product.name }}</td>
+                    <td>{{ movement.net_quantity }}</td>
+                    <td>{{ movement.get_movement_type_display }}</td>
+                    <td>{{ movement.timestamp|date:"Y-m-d H:i" }}</td>
+                    <td>{{ movement.description }}</td>
+                    <td>{{ movement.expiration_date|date:"Y-m-d" }}</td>
+                    <td>{{ movement.price }} ر.س</td>
+                    <td>{{ movement.wastage }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

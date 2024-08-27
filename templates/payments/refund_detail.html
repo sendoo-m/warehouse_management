@@ -1,0 +1,75 @@
+{% extends 'parts/base.html' %}
+
+{% block title %}تفاصيل الاسترداد{% endblock %}
+
+{% block content %}
+<div class="invoice-container mt-5" id="printableArea">
+    <div class="row">
+        <h2 class="text-center">تفاصيل الاسترداد رقم #{{ refund.id }}</h2>
+        <div class="col-12">
+            <div class="p-3 mb-3">
+                <!-- Refund Info -->
+                <div class="row mt-4">
+                    <div class="col-sm-6">
+                        <strong>المبلغ المسترد:</strong>
+                        <p>{{ refund.refund_amount }} ريال</p>
+                    </div>
+
+                    <div class="col-sm-6 text-right">
+                        <p><b>التاريخ:</b> {{ refund.refund_date }}</p>
+                        <p><b>السبب:</b> {{ refund.get_reason_display }}</p>
+                    </div>
+                </div>
+
+                <!-- Refund details -->
+                <h4 class="text-center text-uppercase mb-4">تفاصيل الاسترداد</h4>
+                <p>{{ refund.description }}</p>
+
+                <h3 class="text-center mt-4">شكراً لتعاملكم معنا</h3>
+
+                <!-- Print Button -->
+                <div class="text-center mt-4">
+                    <button id="print-btn" class="btn btn-primary">طباعة الإيصال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'refund_list' %}" class="btn btn-secondary mt-3">الرجوع للقائمة</a>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('print-btn').addEventListener('click', function () {
+        const printContents = document.getElementById('printableArea').innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .invoice-container {
+        margin-top: 30px;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #print-btn, .navbar, .footer {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

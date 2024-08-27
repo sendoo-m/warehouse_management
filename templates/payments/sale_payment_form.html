@@ -1,0 +1,28 @@
+{% extends 'parts/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}إضافة مدفوعات بيع جديدة{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-secondary">
+                    <h3>إضافة مدفوعات بيع جديدة</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}  <!-- استخدام crispy لعرض النموذج الرئيسي بشكل جيد -->
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-success">حفظ الدفعة</button>
+                            <a href="{% url 'purchase_payment_list' %}" class="btn btn-secondary">الرجوع للقائمة</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+ 

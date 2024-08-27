@@ -1,0 +1,53 @@
+{% extends 'parts/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}إنشاء عملية تصنيع جديدة{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-secondary">
+                    <h3>إنشاء عملية تصنيع جديدة</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}  <!-- استخدام crispy لعرض النموذج الرئيسي بشكل جيد -->
+
+                        <h3 class="mt-4">اختر المواد الخام والكمية لكل مادة</h3>
+                        {{ formset.management_form }}
+                        <table class="table" id="formset_table">
+                            <thead>
+                                <tr>
+                                    <th>المادة الخام</th>
+                                    <th>الكمية المستخدمة</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for form in formset %}
+                                <tr>
+                                    <td>{{ form.material }}</td>  <!-- عرض حقل المادة الخام -->
+                                    <td>{{ form.quantity_used }}</td>  <!-- عرض حقل الكمية المستخدمة -->
+                                    <td>
+                                        <button type="button" class="btn btn-danger remove-row">
+                                            <i class="fas fa-trash-alt"></i> <!-- أيقونة الحذف -->
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success">حفظ</button>
+                            <a href="{% url 'manufacturing_list' %}" class="btn btn-secondary">إلغاء</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

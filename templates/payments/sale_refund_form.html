@@ -1,0 +1,36 @@
+{% extends 'parts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}إنشاء استرداد مبيعات{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">إنشاء استرداد مبيعات</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="transaction">عملية الدفع:</label>
+            {{ form.transaction|as_crispy_field }}
+        </div>
+
+        <div class="form-group">
+            <label for="refund_amount">المبلغ المسترد:</label>
+            {{ form.refund_amount|as_crispy_field }}
+        </div>
+
+        <div class="form-group">
+            <label for="reason">السبب:</label>
+            {{ form.reason|as_crispy_field }}
+        </div>
+
+        <div class="form-group">
+            <label for="description">الوصف:</label>
+            {{ form.description|as_crispy_field }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">حفظ</button>
+        <a href="{% url 'sale_refund_list' %}" class="btn btn-secondary">إلغاء</a>
+    </form>
+</div>
+{% endblock %}
